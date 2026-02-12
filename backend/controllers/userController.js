@@ -14,7 +14,7 @@ export const register = async (req, res) => {
             return res.status(400).json({ message: "Password do not match." })
         }
 
-        const user = User.findOne({ username });
+        const user = await User.findOne({ username });
 
         if (user) {
             return res.status(400).json({ message: "Username already exists." })
@@ -40,7 +40,11 @@ export const register = async (req, res) => {
             success: true
         })
     } catch (error) {
-        console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong",
+            success: false
+        });
+
 
     }
 }
@@ -71,9 +75,9 @@ export const login = async (req, res) => {
         const tokenData = {
             userId: user._id  // decode in isAuth
         }
-        const token = await jwt.sign(tokenData, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
+        const token = jwt.sign(tokenData, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
 
-        return res.status(200).cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpsOnly: true, sameSite: 'strict' }).json({
+        return res.status(201).cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' }).json({
             _id: user._id,
             username: user.username,
             fullName: user.fullName,
@@ -82,7 +86,11 @@ export const login = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong",
+            success: false
+        });
+
 
 
     }
@@ -96,7 +104,10 @@ export const logout = async (req, res) => {
         })
 
     } catch (error) {
-        console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong",
+            success: false
+        });
 
     }
 };
@@ -108,7 +119,10 @@ export const getOtherUsers = async (req, res) => {
         return res.status(200).json(otherUsers);
 
     } catch (error) {
-        console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong",
+            success: false
+        });
 
     }
 }
