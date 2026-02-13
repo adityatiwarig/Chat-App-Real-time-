@@ -1,0 +1,222 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* ---------- GLOBAL BACKGROUND ---------- */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: radial-gradient(circle at 20% 30%, #1a1a2e, #0f0f1a 40%, #000);
+  position: relative;
+}
+
+/* Animated glowing background blobs */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.4;
+  animation: float 15s infinite alternate ease-in-out;
+  z-index: 0;
+}
+
+body::before {
+  background: #ff0055;
+  top: -200px;
+  left: -150px;
+}
+
+body::after {
+  background: #00ccff;
+  bottom: -200px;
+  right: -150px;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) translateX(0px); }
+  100% { transform: translateY(40px) translateX(30px); }
+}
+
+/* ---------- CENTER CONTAINER ---------- */
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- GLASS CARD ---------- */
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 45px;
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 0 40px rgba(255, 0, 85, 0.3),
+    0 0 80px rgba(0, 204, 255, 0.2);
+  color: white;
+  position: relative;
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+/* Shine animation */
+.auth-card::before {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    120deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.2),
+    transparent 60%
+  );
+  transform: rotate(25deg) translateX(-100%);
+  animation: shine 6s infinite;
+}
+
+@keyframes shine {
+  0% { transform: rotate(25deg) translateX(-100%); }
+  100% { transform: rotate(25deg) translateX(100%); }
+}
+
+.auth-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow:
+    0 0 60px rgba(255, 0, 85, 0.5),
+    0 0 120px rgba(0, 204, 255, 0.4);
+}
+
+/* ---------- HEADING ---------- */
+
+.auth-card h2 {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 35px;
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, #ff0055, #00ccff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ---------- INPUTS ---------- */
+
+.auth-card input[type="text"],
+.auth-card input[type="password"] {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0 22px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  outline: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.auth-card input:focus {
+  border: 1px solid #00ccff;
+  box-shadow: 0 0 15px #00ccff;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* ---------- GENDER SECTION ---------- */
+
+.gender {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 10px 0 25px 0;
+}
+
+.gender label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  color: rgba(255,255,255,0.8);
+  transition: 0.3s ease;
+}
+
+.gender input[type="radio"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #00ccff;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.gender input[type="radio"]:checked {
+  background: #00ccff;
+  box-shadow: 0 0 10px #00ccff;
+}
+
+.gender label:hover {
+  color: #00ccff;
+}
+
+/* ---------- LINK ---------- */
+
+.switch-text {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+}
+
+.switch-text a {
+  color: #00ccff;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.switch-text a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 10px #00ccff;
+}
+
+/* ---------- BUTTON ---------- */
+
+.auth-card button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  background: linear-gradient(90deg, #ff0055, #00ccff);
+  background-size: 200% auto;
+  color: white;
+  transition: 0.4s ease;
+}
+
+.auth-card button:hover {
+  background-position: right center;
+  box-shadow: 0 0 25px rgba(0, 204, 255, 0.7);
+  transform: translateY(-3px);
+}
