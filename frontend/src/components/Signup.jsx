@@ -10,12 +10,27 @@ const Signup = () => {
     gender: ""
   });
 
+  
+
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
+    console.log(user);
+    setUser({
+    fullName: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    gender: ""
+    })
+    
+  }
+
   return (
     <div className="auth-container">
       <div className="auth-card">
         <h2>Signup</h2>
 
-        <form>
+        <form onSubmit={onSubmitHandler}>
           <label>Full Name</label>
           <input
             type="text"

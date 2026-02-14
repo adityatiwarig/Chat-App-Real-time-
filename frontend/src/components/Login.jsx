@@ -1,19 +1,28 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-
 const Login = () => {
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
 
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
+    console.log(user);
+
+    setUser({
+      username: "",
+      password: "",
+    });
+  };   
+
   return (
     <div className="auth-container">
       <div className="auth-card">
         <h2>Login</h2>
 
-        <form>
+        <form onSubmit={onSubmitHandler}>
           <label>Username</label>
           <input
             type="text"
