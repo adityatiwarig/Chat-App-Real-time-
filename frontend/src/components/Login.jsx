@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Link,useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { log } from "console";
+import { useDispatch } from "react-redux";
+import { set } from "mongoose";
+import { setAuthUser } from "../redux/userSlice";
 
 const Login = () => {
   const [user, setUser] = useState({
@@ -10,6 +13,7 @@ const Login = () => {
     password: "",
   });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const onSubmitHandler = async(e) => {
     e.preventDefault();
@@ -26,7 +30,7 @@ const Login = () => {
       );
 
         navigate("/");
-        console.log(res);
+        dispatch(setAuthUser(res.data)) // YE AUTHUSER KO OBJECT SEND KREGA REACT REDUX ME
         
       console.log(res);
     } catch (error) {
