@@ -2,9 +2,9 @@ import React, { use, useState } from "react";
 import { Link,useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { log } from "console";
+
 import { useDispatch } from "react-redux";
-import { set } from "mongoose";
+
 import { setAuthUser } from "../redux/userSlice";
 
 const Login = () => {
