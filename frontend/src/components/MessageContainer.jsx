@@ -3,7 +3,7 @@ import SendInput from "./SendInput";
 
 const MessageContainer = () => {
   return (
-    <div className="flex-1 flex flex-col bg-slate-800">
+    <div className="flex-1 flex flex-col bg-slate-800 h-full">
 
       {/* Header */}
       <div className="p-4 border-b border-slate-700 text-white font-semibold">
@@ -23,8 +23,8 @@ const MessageContainer = () => {
 
       </div>
 
-      {/* Input Section */}
-      <div className="p-4 border-t border-slate-700">
+      {/* Input */}
+      <div className="p-4 border-t border-slate-700 bg-slate-800 relative z-10">
         <SendInput />
       </div>
 
