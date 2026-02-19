@@ -1,5 +1,6 @@
 import React from "react";
 import SendInput from "./SendInput";
+import Messages from "./Messages";
 
 const MessageContainer = () => {
   return (
@@ -22,11 +23,14 @@ const MessageContainer = () => {
         </div>
 
       </div>
+      <Messages/>
 
       {/* Input */}
       <div className="p-4 border-t border-slate-700 bg-slate-800 relative z-10">
         <SendInput />
+        
       </div>
+      
 
     </div>
   );
