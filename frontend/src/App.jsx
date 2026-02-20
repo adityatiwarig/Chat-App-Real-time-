@@ -15,6 +15,7 @@ import {
   setAuthLoading,
   setAuthUser,
   setOnlineUsers,
+  updateUserLastSeen,
 } from "./redux/userSlice";
 
 const router = createBrowserRouter([
@@ -79,16 +80,16 @@ function App() {
       reconnectionDelayMax: 4000,
     });
 
-    socket.on("connect", () => {
-      // no-op: keeps socket lifecycle explicit and easier to debug
-    });
-
     socket.on("getOnlineUsers", (onlineUsers) => {
       dispatch(setOnlineUsers(onlineUsers || []));
     });
 
     socket.on("newMessage", (newMessage) => {
       dispatch(addMessage(newMessage));
+    });
+
+    socket.on("userLastSeen", (payload) => {
+      dispatch(updateUserLastSeen(payload));
     });
 
     socket.on("connect_error", () => {

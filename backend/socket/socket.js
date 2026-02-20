@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
+import { User } from "../models/userModel.js";
 
 let io;
 const userSocketMap = {};
@@ -50,7 +51,7 @@ export const initSocket = (server) => {
     userSocketMap[userId].add(socket.id);
     io.emit("getOnlineUsers", getOnlineUserIds());
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       const sockets = userSocketMap[userId];
 
       if (!sockets) return;
@@ -59,6 +60,9 @@ export const initSocket = (server) => {
 
       if (!sockets.size) {
         delete userSocketMap[userId];
+        const lastSeen = new Date();
+        await User.findByIdAndUpdate(userId, { lastSeen });
+        io.emit("userLastSeen", { userId, lastSeen });
       }
 
       io.emit("getOnlineUsers", getOnlineUserIds());

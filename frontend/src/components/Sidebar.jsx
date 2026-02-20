@@ -4,19 +4,26 @@ import OtherUsers from "./OtherUsers";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { clearChatState, setAuthUser } from "../redux/userSlice";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
+  const { unreadCounts } = useSelector((store) => store.user);
 
   const trimmedSearch = useMemo(() => search.trim(), [search]);
+  const totalUnread = useMemo(
+    () => Object.values(unreadCounts).reduce((sum, count) => sum + count, 0),
+    [unreadCounts]
+  );
 
   const logoutHandler = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/v1/user/logout`);
+      const res = await axios.get(`http://localhost:8000/api/v1/user/logout`, {
+        withCredentials: true,
+      });
       dispatch(setAuthUser(null));
       dispatch(clearChatState());
       navigate("/login");
@@ -31,7 +38,14 @@ const Sidebar = () => {
     <aside className="w-full md:w-[34%] min-w-[280px] h-[38%] md:h-full flex flex-col bg-slate-950/70 border-b md:border-b-0 md:border-r border-slate-800 p-4">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-semibold text-white">Chats</h2>
-        <span className="text-xs text-slate-400">Realtime</span>
+        <div className="flex items-center gap-2">
+          {totalUnread > 0 ? (
+            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-500 text-slate-950">
+              {totalUnread} new
+            </span>
+          ) : null}
+          <span className="text-xs text-slate-400">Realtime</span>
+        </div>
       </div>
 
       <form

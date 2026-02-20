@@ -30,6 +30,7 @@ export const register = async (req, res) => {
       password: hashedPassword,
       gender,
       profilePhoto: gender === "male" ? maleProfilePhoto : femaleProfilePhoto,
+      lastSeen: new Date(),
     });
 
     return res.status(200).json({
@@ -67,6 +68,9 @@ export const login = async (req, res) => {
       });
     }
 
+    user.lastSeen = new Date();
+    await user.save();
+
     const tokenData = {
       userId: user._id,
     };
@@ -86,6 +90,7 @@ export const login = async (req, res) => {
         username: user.username,
         fullName: user.fullName,
         profilePhoto: user.profilePhoto,
+        lastSeen: user.lastSeen,
       });
   } catch (error) {
     return res.status(500).json({
@@ -97,6 +102,10 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
+    if (req.id) {
+      await User.findByIdAndUpdate(req.id, { lastSeen: new Date() });
+    }
+
     return res.status(200).cookie("token", "", { maxAge: 0 }).json({
       message: "User logged out..",
     });

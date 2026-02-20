@@ -1,5 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const normalizeId = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && value._id) return normalizeId(value._id);
+  if (typeof value.toString === "function") return value.toString();
+  return "";
+};
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -9,6 +17,7 @@ const userSlice = createSlice({
     messages: [],
     isAuthLoading: true,
     onlineUsers: [],
+    unreadCounts: {},
   },
   reducers: {
     setAuthUser: (state, action) => {
@@ -19,8 +28,39 @@ const userSlice = createSlice({
       state.otherUsers = action.payload;
     },
 
+    updateUserLastSeen: (state, action) => {
+      const { userId, lastSeen } = action.payload || {};
+      const normalizedUserId = normalizeId(userId);
+      if (!normalizedUserId || !lastSeen) return;
+
+      if (state.otherUsers?.length) {
+        state.otherUsers = state.otherUsers.map((user) => {
+          const currentId = normalizeId(user?._id);
+          if (currentId !== normalizedUserId) return user;
+          return { ...user, lastSeen };
+        });
+      }
+
+      const selectedId = normalizeId(state.selectedUser?._id);
+      if (selectedId === normalizedUserId && state.selectedUser) {
+        state.selectedUser = { ...state.selectedUser, lastSeen };
+      }
+    },
+
     setSelectedUser: (state, action) => {
       state.selectedUser = action.payload;
+
+      const userId = normalizeId(action.payload?._id);
+      if (userId && state.unreadCounts[userId]) {
+        delete state.unreadCounts[userId];
+      }
+    },
+
+    clearUnreadByUserId: (state, action) => {
+      const userId = normalizeId(action.payload);
+      if (userId && state.unreadCounts[userId]) {
+        delete state.unreadCounts[userId];
+      }
     },
 
     setMessages: (state, action) => {
@@ -30,25 +70,31 @@ const userSlice = createSlice({
     addMessage: (state, action) => {
       const newMessage = action.payload;
 
-      if (!state.authUser?._id || !state.selectedUser?._id) return;
+      if (!state.authUser?._id) return;
 
-      const authId = state.authUser._id.toString();
-      const selectedId = state.selectedUser._id.toString();
-      const senderId = newMessage?.senderId?.toString();
-      const receiverId = newMessage?.receiverId?.toString();
+      const authId = normalizeId(state.authUser._id);
+      const selectedId = normalizeId(state.selectedUser?._id);
+      const senderId = normalizeId(newMessage?.senderId);
+      const receiverId = normalizeId(newMessage?.receiverId);
 
       const belongsToCurrentChat =
-        (senderId === selectedId && receiverId === authId) ||
-        (senderId === authId && receiverId === selectedId);
+        !!selectedId &&
+        ((senderId === selectedId && receiverId === authId) ||
+          (senderId === authId && receiverId === selectedId));
 
-      if (!belongsToCurrentChat) return;
+      if (belongsToCurrentChat) {
+        const alreadyExists = state.messages.some(
+          (message) => normalizeId(message._id) === normalizeId(newMessage._id)
+        );
 
-      const alreadyExists = state.messages.some(
-        (message) => message._id === newMessage._id
-      );
+        if (!alreadyExists) {
+          state.messages.push(newMessage);
+        }
+      }
 
-      if (!alreadyExists) {
-        state.messages.push(newMessage);
+      const isIncomingMessage = receiverId === authId && senderId !== authId;
+      if (isIncomingMessage && senderId && senderId !== selectedId) {
+        state.unreadCounts[senderId] = (state.unreadCounts[senderId] || 0) + 1;
       }
     },
 
@@ -57,7 +103,7 @@ const userSlice = createSlice({
     },
 
     setOnlineUsers: (state, action) => {
-      state.onlineUsers = action.payload;
+      state.onlineUsers = (action.payload || []).map((id) => normalizeId(id));
     },
 
     clearChatState: (state) => {
@@ -65,6 +111,7 @@ const userSlice = createSlice({
       state.selectedUser = null;
       state.messages = [];
       state.onlineUsers = [];
+      state.unreadCounts = {};
     },
   },
 });
@@ -72,7 +119,9 @@ const userSlice = createSlice({
 export const {
   setAuthUser,
   setOtherUsers,
+  updateUserLastSeen,
   setSelectedUser,
+  clearUnreadByUserId,
   setMessages,
   addMessage,
   setAuthLoading,
