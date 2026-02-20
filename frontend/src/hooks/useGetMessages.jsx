@@ -28,7 +28,12 @@ const useGetMessages = () => {
     };
 
     fetchMessages();
-  }, [selectedUser, dispatch]);
+
+    if (!selectedUser?._id) return undefined;
+
+    const intervalId = setInterval(fetchMessages, 6000);
+    return () => clearInterval(intervalId);
+  }, [selectedUser?._id, dispatch]);
 };
 
 export default useGetMessages;

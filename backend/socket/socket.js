@@ -68,13 +68,13 @@ export const initSocket = (server) => {
   return io;
 };
 
-export const getReceiverSocketId = (receiverId) => {
-  if (!receiverId) return null;
+export const getReceiverSocketIds = (receiverId) => {
+  if (!receiverId) return [];
 
   const sockets = userSocketMap[receiverId.toString()];
-  if (!sockets || !sockets.size) return null;
+  if (!sockets || !sockets.size) return [];
 
-  return [...sockets][0];
+  return [...sockets];
 };
 
 export const getIO = () => io;

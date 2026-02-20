@@ -73,15 +73,26 @@ function App() {
 
     const socket = io("http://localhost:8000", {
       withCredentials: true,
-      transports: ["websocket"],
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 4000,
+    });
+
+    socket.on("connect", () => {
+      // no-op: keeps socket lifecycle explicit and easier to debug
     });
 
     socket.on("getOnlineUsers", (onlineUsers) => {
-      dispatch(setOnlineUsers(onlineUsers));
+      dispatch(setOnlineUsers(onlineUsers || []));
     });
 
     socket.on("newMessage", (newMessage) => {
       dispatch(addMessage(newMessage));
+    });
+
+    socket.on("connect_error", () => {
+      dispatch(setOnlineUsers([]));
     });
 
     return () => {
@@ -91,7 +102,7 @@ function App() {
   }, [authUser?._id, dispatch]);
 
   return (
-    <div className="p-4 h-screen flex items-center justify-center">
+    <div className="min-h-screen px-3 py-4 md:px-6 md:py-6">
       <RouterProvider router={router} />
     </div>
   );

@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 
 function SendInput() {
   const [text, setText] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const dispatch = useDispatch();
   const { selectedUser } = useSelector((store) => store.user);
 
@@ -14,9 +15,10 @@ function SendInput() {
     e.preventDefault();
     const trimmed = text.trim();
 
-    if (!trimmed || !selectedUser?._id) return;
+    if (!trimmed || !selectedUser?._id || isSending) return;
 
     try {
+      setIsSending(true);
       axios.defaults.withCredentials = true;
       const res = await axios.post(
         `http://localhost:8000/api/v1/message/send/${selectedUser._id}`,
@@ -31,6 +33,8 @@ function SendInput() {
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || "Failed to send message");
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -41,14 +45,14 @@ function SendInput() {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={selectedUser ? "Type a message..." : "Select a user first"}
-        disabled={!selectedUser}
-        className="flex-1 bg-slate-700 text-white px-4 py-2 rounded-lg outline-none transition-all duration-300 focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
+        disabled={!selectedUser || isSending}
+        className="flex-1 bg-slate-700 text-white px-4 py-2 rounded-lg outline-none transition-all duration-300 focus:ring-2 focus:ring-cyan-500 disabled:opacity-60"
       />
 
       <button
         type="submit"
-        disabled={!selectedUser || !text.trim()}
-        className="bg-indigo-600 p-3 rounded-lg transition-all duration-300 hover:bg-indigo-700 active:scale-95 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+        disabled={!selectedUser || !text.trim() || isSending}
+        className="bg-cyan-600 p-3 rounded-lg transition-all duration-300 hover:bg-cyan-700 active:scale-95 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
       >
         <FiSend className="text-white text-lg" />
       </button>

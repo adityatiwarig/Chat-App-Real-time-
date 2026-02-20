@@ -31,7 +31,7 @@ app.use(
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/message", messageRoute);
 
-server.listen(PORT, () => {
-  connectDB();
+server.listen(PORT, async () => {
+  await connectDB();
   console.log(`Server running at port ${PORT}`);
 });
