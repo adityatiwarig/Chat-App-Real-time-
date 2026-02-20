@@ -1,24 +1,34 @@
-import axios from 'axios'
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import axios from "axios";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setMessages } from "../redux/userSlice";
 
 const useGetMessages = () => {
-    const {selectedUser}  = useSelector(store => store.user);
-    useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                axios.defaults.withCredentials = true;
-                const res = await axios.get(`http://localhost:8000/api/v1/message/${selectedUser?._id}`)
-                console.log(res);
-                
-                
-            } catch (error) {
-                
-            }
-        }
-        fetchMessages();
-        
-    }, [])
-}
+  const { selectedUser } = useSelector((store) => store.user);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!selectedUser?._id) {
+        dispatch(setMessages([]));
+        return;
+      }
+
+      try {
+        axios.defaults.withCredentials = true;
+
+        const res = await axios.get(
+          `http://localhost:8000/api/v1/message/${selectedUser._id}`
+        );
+
+        dispatch(setMessages(res.data));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchMessages();
+  }, [selectedUser, dispatch]);
+};
 
 export default useGetMessages;

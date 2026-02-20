@@ -1,10 +1,8 @@
-import React, { use, useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
-
 import { useDispatch } from "react-redux";
-
 import { setAuthUser } from "../redux/userSlice";
 
 const Login = () => {
@@ -15,26 +13,20 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const onSubmitHandler = async(e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
-        try {
-      const res = await axios.post(
-        `http://localhost:8000/api/v1/user/login`,
-        user,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
+    try {
+      const res = await axios.post(`http://localhost:8000/api/v1/user/login`, user, {
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        withCredentials: true,
+      });
 
-        navigate("/");
-        dispatch(setAuthUser(res.data)) // YE AUTHUSER KO OBJECT SEND KREGA REACT REDUX ME
-        
-      console.log(res);
+      navigate("/");
+      dispatch(setAuthUser(res.data));
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Login failed");
       console.log(error);
     }
 
@@ -42,7 +34,7 @@ const Login = () => {
       username: "",
       password: "",
     });
-  };   
+  };
 
   return (
     <div className="auth-container">
@@ -55,9 +47,7 @@ const Login = () => {
             type="text"
             placeholder="Username"
             value={user.username}
-            onChange={(e) =>
-              setUser({ ...user, username: e.target.value })
-            }
+            onChange={(e) => setUser({ ...user, username: e.target.value })}
           />
 
           <label>Password</label>
@@ -65,13 +55,11 @@ const Login = () => {
             type="password"
             placeholder="Password"
             value={user.password}
-            onChange={(e) =>
-              setUser({ ...user, password: e.target.value })
-            }
+            onChange={(e) => setUser({ ...user, password: e.target.value })}
           />
 
           <p className="switch-text">
-            Don't have an account? <Link to="/register">Signup</Link>
+            Don&apos;t have an account? <Link to="/register">Signup</Link>
           </p>
 
           <button type="submit">Login</button>
